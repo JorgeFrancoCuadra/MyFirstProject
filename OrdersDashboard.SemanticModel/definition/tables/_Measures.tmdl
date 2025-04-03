@@ -1,0 +1,21 @@
+table _Measures
+	lineageTag: f13a1b10-47b0-4781-8a6c-76036bc40953
+
+	measure Sales = SUM(Orders[Sales])
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: c20fc664-3a66-4be8-835d-58f59f890f74
+
+	partition _Measures = m
+		mode: import
+		source =
+				let
+				    Origen = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Columna1 = _t]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"Columna1", type text}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"Columna1"})
+				in
+				    #"Columnas quitadas"
+
+	changedProperty = Name
+
+	annotation PBI_ResultType = Table
+

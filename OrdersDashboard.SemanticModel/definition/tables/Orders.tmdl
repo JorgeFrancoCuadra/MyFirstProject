@@ -52,7 +52,7 @@ table Orders
 		dataType: int64
 		formatString: 0
 		lineageTag: a6b73ee5-59ac-42a8-b8b8-6d6794ffe378
-		summarizeBy: count
+		summarizeBy: none
 		sourceColumn: Customer ID
 
 		annotation SummarizationSetBy = Automatic
@@ -159,7 +159,7 @@ table Orders
 		dataType: int64
 		formatString: 0
 		lineageTag: 466117a7-9fae-496d-939d-44bce44b8161
-		summarizeBy: count
+		summarizeBy: none
 		sourceColumn: Postal Code
 
 		annotation SummarizationSetBy = Automatic

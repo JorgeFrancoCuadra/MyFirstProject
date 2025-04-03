@@ -11,12 +11,15 @@ relationship b9daca07-4ba9-884c-7496-c1b5eb076711
 	fromColumn: Orders.'Order ID'
 	toColumn: Returns.'Order ID'
 
-relationship eef20a42-e74e-4fdb-bb4f-8002bae8d8f7
-	joinOnDateBehavior: datePartOnly
-	fromColumn: Calendar.Date
-	toColumn: LocalDateTable_cc84207f-5f41-42b2-8335-bdb370de5e78.Date
-
 relationship 89d3f8ac-7943-64aa-3b03-2288f2a0a65e
 	fromColumn: Orders.'Order Date'
 	toColumn: Calendar.Date
+
+relationship 8f0b7569-eecd-17ef-f95a-23cc8d1a48a6
+	fromColumn: Orders.'Customer ID'
+	toColumn: Customer.'Customer ID'
+
+relationship af3ac965-1b7b-7a40-5c14-575592e2b9db
+	fromColumn: Orders.'Postal Code'
+	toColumn: Geographies.'Postal Code'
 

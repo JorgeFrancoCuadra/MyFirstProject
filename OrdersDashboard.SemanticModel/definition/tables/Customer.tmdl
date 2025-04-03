@@ -1,0 +1,40 @@
+table Customer
+	lineageTag: 0d2d864e-a139-41a0-8e02-90b6630f7c17
+
+	column 'Customer ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: 66abebdc-e390-4fa6-a702-3bc4941aaf0f
+		summarizeBy: none
+		sourceColumn: Customer ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Name'
+		dataType: string
+		lineageTag: e1b34bb8-401a-4a02-b221-9980f3e02133
+		summarizeBy: none
+		sourceColumn: Customer Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Customer = m
+		mode: import
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("D:\Programación\Power BI Projects\OrdersDashboard\MyFirstProject\SuperStoreUS-2015.xlsx"), null, false),
+				    Orders_sheet = Origen{[Item="Orders",Kind="Sheet"]}[Data],
+				    FilterNullAndWhitespace = each List.Select(_, each _ <> null and (not (_ is text) or Text.Trim(_) <> "")),
+				    #"Otras columnas quitadas" = Table.SelectColumns(Orders_sheet, List.Select(Table.ColumnNames(Orders_sheet), each try not List.IsEmpty(FilterNullAndWhitespace(Table.Column(Orders_sheet, _))) otherwise true)),
+				    #"Encabezados promovidos" = Table.PromoteHeaders(#"Otras columnas quitadas", [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"Row ID", Int64.Type}, {"Order Priority", type text}, {"Discount", type number}, {"Unit Price", type number}, {"Shipping Cost", type number}, {"Customer ID", Int64.Type}, {"Customer Name", type text}, {"Ship Mode", type text}, {"Customer Segment", type text}, {"Product Category", type text}, {"Product Sub-Category", type text}, {"Product Container", type text}, {"Product Name", type text}, {"Product Base Margin", type number}, {"Country", type text}, {"Region", type text}, {"State or Province", type text}, {"City", type text}, {"Postal Code", Int64.Type}, {"Order Date", type date}, {"Ship Date", type date}, {"Profit", type number}, {"Quantity ordered new", Int64.Type}, {"Sales", type number}, {"Order ID", Int64.Type}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"Row ID", "Order Priority", "Discount", "Unit Price", "Shipping Cost", "Ship Mode", "Product Category", "Product Sub-Category", "Product Container", "Product Name", "Product Base Margin", "Country", "Region", "State or Province", "City", "Postal Code", "Order Date", "Ship Date", "Profit", "Quantity ordered new", "Sales", "Order ID", "Customer Segment"}),
+				    #"Duplicados quitados" = Table.Distinct(#"Columnas quitadas"),
+				    #"Filas ordenadas" = Table.Sort(#"Duplicados quitados",{{"Customer ID", Order.Ascending}})
+				in
+				    #"Filas ordenadas"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

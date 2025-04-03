@@ -1,17 +1,14 @@
 table Calendar
 	lineageTag: b5b5804c-19ef-4448-b38e-e7c1a4d7b670
+	dataCategory: Time
 
 	column Date
+		isKey
 		formatString: General Date
 		lineageTag: f6640c8d-4909-4d6e-9afc-15e989a2b6b5
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [Date]
-
-		variation Variación
-			isDefault
-			relationship: eef20a42-e74e-4fdb-bb4f-8002bae8d8f7
-			defaultHierarchy: LocalDateTable_cc84207f-5f41-42b2-8335-bdb370de5e78.'Jerarquía de fechas'
 
 		annotation SummarizationSetBy = Automatic
 

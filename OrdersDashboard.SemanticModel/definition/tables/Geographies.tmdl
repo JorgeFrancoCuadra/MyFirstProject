@@ -1,0 +1,57 @@
+table Geographies
+	lineageTag: 2c7f53b6-2712-421c-a87b-108a5bd50974
+
+	column 'Postal Code'
+		dataType: int64
+		formatString: 0
+		lineageTag: 1dd924af-ca47-4a52-ac71-22180ed18f6d
+		summarizeBy: none
+		sourceColumn: Postal Code
+
+		annotation SummarizationSetBy = Automatic
+
+	column Country
+		dataType: string
+		lineageTag: 31d68c89-a9a9-4155-a6eb-798dcb8fa46b
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = Automatic
+
+	column Region
+		dataType: string
+		lineageTag: 35a65920-54a4-43bb-a9dd-a7967adffe08
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'State or Province'
+		dataType: string
+		lineageTag: f1a3e3f2-8607-4d46-abd6-356f9b79916e
+		summarizeBy: none
+		sourceColumn: State or Province
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Geographies = m
+		mode: import
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("D:\Programación\Power BI Projects\OrdersDashboard\MyFirstProject\SuperStoreUS-2015.xlsx"), null, false),
+				    Orders_sheet = Origen{[Item="Orders",Kind="Sheet"]}[Data],
+				    FilterNullAndWhitespace = each List.Select(_, each _ <> null and (not (_ is text) or Text.Trim(_) <> "")),
+				    #"Otras columnas quitadas" = Table.SelectColumns(Orders_sheet, List.Select(Table.ColumnNames(Orders_sheet), each try not List.IsEmpty(FilterNullAndWhitespace(Table.Column(Orders_sheet, _))) otherwise true)),
+				    #"Encabezados promovidos" = Table.PromoteHeaders(#"Otras columnas quitadas", [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"Row ID", Int64.Type}, {"Order Priority", type text}, {"Discount", type number}, {"Unit Price", type number}, {"Shipping Cost", type number}, {"Customer ID", Int64.Type}, {"Customer Name", type text}, {"Ship Mode", type text}, {"Customer Segment", type text}, {"Product Category", type text}, {"Product Sub-Category", type text}, {"Product Container", type text}, {"Product Name", type text}, {"Product Base Margin", type number}, {"Country", type text}, {"Region", type text}, {"State or Province", type text}, {"City", type text}, {"Postal Code", Int64.Type}, {"Order Date", type date}, {"Ship Date", type date}, {"Profit", type number}, {"Quantity ordered new", Int64.Type}, {"Sales", type number}, {"Order ID", Int64.Type}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"Row ID", "Order Priority", "Discount", "Unit Price", "Shipping Cost", "Customer ID", "Customer Name", "Ship Mode", "Customer Segment", "Product Category", "Product Sub-Category", "Product Container", "Product Name", "Product Base Margin", "Order Date", "Ship Date", "Profit", "Quantity ordered new", "Sales", "Order ID", "City"}),
+				    #"Duplicados quitados" = Table.Distinct(#"Columnas quitadas"),
+				    #"Columnas reordenadas" = Table.ReorderColumns(#"Duplicados quitados",{"Postal Code", "Country", "Region", "State or Province"}),
+				    #"Filas ordenadas" = Table.Sort(#"Columnas reordenadas",{{"Postal Code", Order.Ascending}})
+				in
+				    #"Filas ordenadas"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
