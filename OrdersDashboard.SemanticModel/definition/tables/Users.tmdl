@@ -1,0 +1,35 @@
+table Users
+	lineageTag: 5db80fab-37c7-4351-988d-4690208a34df
+
+	column Region
+		dataType: string
+		lineageTag: ecc80ca8-1218-4abe-b59b-8240d61e1bcc
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	column Manager
+		dataType: string
+		lineageTag: 868b88fd-7330-4a66-b5fc-21d743910a0b
+		summarizeBy: none
+		sourceColumn: Manager
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Users = m
+		mode: import
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("D:\Programación\Power BI Projects\OrdersDashboard\MyFirstProject\SuperStoreUS-2015.xlsx"), null, true),
+				    Users_Sheet = Origen{[Item="Users",Kind="Sheet"]}[Data],
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Users_Sheet,{{"Column1", type text}, {"Column2", type text}}),
+				    #"Encabezados promovidos" = Table.PromoteHeaders(#"Tipo cambiado", [PromoteAllScalars=true]),
+				    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"Region", type text}, {"Manager", type text}})
+				in
+				    #"Tipo cambiado1"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

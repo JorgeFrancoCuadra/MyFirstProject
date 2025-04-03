@@ -1,0 +1,35 @@
+table Returns
+	lineageTag: 4ecc74b0-334f-4b2b-a4b9-90e68a1411b0
+
+	column 'Order ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: 162336b0-04a6-4e56-8925-2eb1d5b20319
+		summarizeBy: none
+		sourceColumn: Order ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: 29d0a5a2-6fa5-40c8-b140-a4dfd0de7ad5
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Returns = m
+		mode: import
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("D:\Programación\Power BI Projects\OrdersDashboard\MyFirstProject\SuperStoreUS-2015.xlsx"), null, true),
+				    Returns_Sheet = Origen{[Item="Returns",Kind="Sheet"]}[Data],
+				    #"Encabezados promovidos" = Table.PromoteHeaders(Returns_Sheet, [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"Order ID", Int64.Type}, {"Status", type text}})
+				in
+				    #"Tipo cambiado"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
